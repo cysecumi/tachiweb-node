@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link rel="stylesheet" href="/assets/style.css">
+    <style>
+        .settings-card {
+            background: #1e1e1e;
+            padding: 25px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            border: 1px solid #2d2d2d;
+        }
+        .settings-card h4 {
+            color: #bb86fc;
+            margin-top: 0;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #333;
+            padding-bottom: 10px;
+            font-size: 1.1rem;
+        }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; font-size: 0.85rem; color: #b3b3b3; margin-bottom: 6px; }
+        .form-group input {
+            width: 100%;
+            padding: 10px 12px;
+            background: #2c2c2c;
+            border: 1px solid #444;
+            color: #fff;
+            border-radius: 6px;
+            box-sizing: border-box;
+            outline: none;
+            font-size: 0.95rem;
+        }
+        .form-group input:focus { border-color: #bb86fc; }
+        .btn-submit {
+            background: #bb86fc;
+            color: #121212;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 0.95rem;
+            transition: background-color 0.2s;
+        }
+        .btn-submit:hover { background: #a362f8; }
+        .alert-success {
+            background: #2e7d32;
+            color: white;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: bold;
+        }
+        .alert-error {
+            background: #c62828;
+            color: white;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <%- include('components/header') %>
+
+    <div class="container" style="max-width: 650px;">
+        <h3 class="section-title">⚙️ Pengaturan Akun</h3>
+
+        <% if(status === 'sukses_profil') { %>
+            <div class="alert-success">✓ Nama profil berhasil diperbarui!</div>
+        <% } else if(status === 'sukses_password') { %>
+            <div class="alert-success">✓ Password berhasil diubah!</div>
+        <% } else if(status === 'password_lama_salah') { %>
+            <div class="alert-error">⚠️ Password lama salah!</div>
+        <% } else if(status === 'password_tidak_sama') { %>
+            <div class="alert-error">⚠️ Konfirmasi password baru tidak cocok!</div>
+        <% } else if(status === 'data_kosong') { %>
+            <div class="alert-error">⚠️ Harap isi semua formulir password dengan lengkap!</div>
+        <% } %>
+
+        <!-- UBAH PROFIL -->
+        <div class="settings-card">
+            <h4>Informasi Profil</h4>
+            <form action="/pengaturan/profil" method="POST">
+                <div class="form-group">
+                    <label>Username (Permanen)</label>
+                    <input type="text" value="<%= user.username %>" disabled style="opacity: 0.6; cursor: not-allowed;">
+                </div>
+                <div class="form-group">
+                    <label>Nama Panggilan / Display Name</label>
+                    <input type="text" name="nama_panggilan" value="<%= user.nama_panggilan %>" required>
+                </div>
+                <button type="submit" class="btn-submit">Simpan Perubahan Profil</button>
+            </form>
+        </div>
+
+        <!-- UBAH PASSWORD -->
+        <div class="settings-card">
+            <h4>Ganti Kata Sandi</h4>
+            <form action="/pengaturan/password" method="POST">
+                <div class="form-group">
+                    <label>Password Lama</label>
+                    <input type="password" name="password_lama" required>
+                </div>
+                <div class="form-group">
+                    <label>Password Baru</label>
+                    <input type="password" name="password_baru" required>
+                </div>
+                <div class="form-group">
+                    <label>Ulangi Password Baru</label>
+                    <input type="password" name="konfirmasi_password" required>
+                </div>
+                <button type="submit" class="btn-submit">Ubah Password</button>
+            </form>
+        </div>
+
+        <div style="margin-top: 20px; text-align: center;">
+            <a href="/feedback" style="display: inline-block; background: #2c2c2c; color: #bb86fc; border: 1px solid #bb86fc; padding: 10px 20px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 0.9rem;">
+                💬 Kirim Feedback / Lapor Masalah
+            </a>
+        </div>
+    </div>
+
+    <%- include('components/footer') %>
+
+</body>
+</html>

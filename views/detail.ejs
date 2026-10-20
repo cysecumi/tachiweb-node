@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link rel="stylesheet" href="/assets/style.css">
+</head>
+<body>
+
+    <div class="detail-header-nav">
+        <a href="/">← Kembali ke Beranda</a>
+    </div>
+
+    <div class="detail-content">
+        <% if(status_action === 'sukses') { %>
+            <div style="background: #2e7d32; color: white; padding: 12px 16px; border-radius: 6px; margin-bottom: 20px; font-weight: bold; text-align: center;">
+                ✓ Komik berhasil ditambahkan ke Library Saya!
+            </div>
+        <% } else if(status_action === 'sudah_ada') { %>
+            <div style="background: #f57c00; color: white; padding: 12px 16px; border-radius: 6px; margin-bottom: 20px; font-weight: bold; text-align: center;">
+                ℹ️ Komik ini sudah ada di Library kamu.
+            </div>
+        <% } else if(status_action === 'hapus_sukses') { %>
+            <div style="background: #c2185b; color: white; padding: 12px 16px; border-radius: 6px; margin-bottom: 20px; font-weight: bold; text-align: center;">
+                🗑️ Komik berhasil dihapus dari Library.
+            </div>
+        <% } %>
+
+        <% if(pesan === 'hapus_komentar_sukses') { %>
+            <div style="background: #c2185b; color: white; padding: 12px 16px; border-radius: 6px; margin-bottom: 20px; font-weight: bold; text-align: center;">
+                ✓ Komentar berhasil dihapus.
+            </div>
+        <% } %>
+
+        <% 
+            var tipe = data.tipe || 'Manga';
+            var bendera = '🇯🇵';
+            var class_tipe = 'type-manga';
+            if(tipe === 'Manhwa') { bendera = '🇰🇷'; class_tipe = 'type-manhwa'; }
+            else if(tipe === 'Manhua') { bendera = '🇨🇳'; class_tipe = 'type-manhua'; }
+
+            // Find first chapter to read
+            var firstChapter = chapters.length > 0 ? chapters[chapters.length - 1] : null;
+        %>
+
+        <div class="detail-top">
+            <div class="detail-cover">
+                <img src="<%= data.cover %>" alt="Cover <%= data.judul %>" onerror="this.onerror=null;this.src='https://placehold.co/300x450/2c2c2c/bb86fc?text=No+Cover';">
+            </div>
+            <div class="detail-info" style="flex: 1;">
+                <h2><%= data.judul %></h2>
+                <p><strong>Author:</strong> <%= data.author %></p>
+                <p><strong>Sumber:</strong> <%= data.sumber %></p>
+                <p><strong>Status:</strong> <span style="color: <%= data.status === 'Completed' ? '#03dac6' : '#bb86fc' %>;"><%= data.status %></span></p>
+                <p><strong>Tipe:</strong> <span class="comic-type-badge <%= class_tipe %>" style="position: static; display: inline-flex; margin-left: 5px;"><%= bendera %> <%= tipe %></span></p>
+
+                <% if(data.genre) { %>
+                    <div class="genre-tags">
+                        <% data.genre.split(',').forEach(function(g) { 
+                            var cleanG = g.trim();
+                            if(cleanG) { %>
+                                <span><%= cleanG %></span>
+                        <%  }
+                        }); %>
+                    </div>
+                <% } %>
+
+                <div style="display: flex; gap: 12px; flex-wrap: wrap; margin-top: 15px;">
+                    <% if(firstChapter) { %>
+                        <a href="/baca/<%= data.id_komik %>/<%= firstChapter.nomor_chapter %>" class="btn-read">
+                            ▶️ Mulai Baca (Ch. <%= firstChapter.nomor_chapter %>)
+                        </a>
+                    <% } %>
+
+                    <% if(currentUser.status === 'login') { %>
+                        <% if(inLibrary) { %>
+                            <form action="/library/hapus" method="POST" style="margin: 0; display: inline-block;">
+                                <input type="hidden" name="id_komik" value="<%= data.id_komik %>">
+                                <button type="submit" class="btn-read" style="background: #2c2c2c; color: #cf6679; border: 1px solid #cf6679;">
+                                    ✓ Di Library (Klik untuk Hapus)
+                                </button>
+                            </form>
+                        <% } else { %>
+                            <form action="/library/tambah" method="POST" style="margin: 0; display: inline-block;">
+                                <input type="hidden" name="id_asli" value="<%= data.id_komik %>">
+                                <input type="hidden" name="judul_komik" value="<%= data.judul %>">
+                                <input type="hidden" name="sumber_komik" value="<%= data.sumber %>">
+                                <input type="hidden" name="cover_komik" value="<%= data.cover %>">
+                                <button type="submit" class="btn-read" style="background: #2c2c2c; color: #bb86fc; border: 1px solid #bb86fc;">
+                                    + Tambah ke Library
+                                </button>
+                            </form>
+                        <% } %>
+                    <% } else { %>
+                        <a href="/login" class="btn-read" style="background: #2c2c2c; color: #bb86fc; border: 1px solid #bb86fc;">
+                            + Tambah ke Library (Login)
+                        </a>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+
+        <div class="detail-section">
+            <h3>Sinopsis</h3>
+            <p style="line-height: 1.7; color: #d6d6d6; font-size: 0.95rem; white-space: pre-line;"><%= data.sinopsis %></p>
+        </div>
+
+        <div class="detail-section">
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #333; padding-bottom: 10px; margin-bottom: 20px;">
+                <h3 style="margin: 0; border: none; padding: 0;">Daftar Chapter</h3>
+                <span style="color: #888; font-size: 0.85rem;"><%= total_chapter %> Chapter Tersedia</span>
+            </div>
+
+            <% if(total_chapter === 0) { %>
+                <div style="color: #888; text-align: center; padding: 30px 0;">Belum ada chapter yang diunggah untuk komik ini.</div>
+            <% } else { %>
+                <div class="chapter-list-container">
+                    <% chapters.forEach(function(ch) { %>
+                        <a href="/baca/<%= data.id_komik %>/<%= ch.nomor_chapter %>" class="chapter-card-item">
+                            <div class="chapter-info-left">
+                                <span class="chapter-title-text">Chapter <%= ch.nomor_chapter %><% if(ch.judul_chapter) { %>: <%= ch.judul_chapter %><% } %></span>
+                                <span class="chapter-date-text"><%= ch.tanggal_rilis %></span>
+                            </div>
+                            <div class="chapter-arrow-btn">➔</div>
+                        </a>
+                    <% }); %>
+                </div>
+            <% } %>
+        </div>
+
+        <!-- KOMENTAR -->
+        <div class="detail-section">
+            <h3>💬 Komentar Pembaca (<%= comments.length %>)</h3>
+
+            <% if(currentUser.status === 'login') { %>
+                <form action="/komentar/tambah" method="POST" style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 25px;">
+                    <input type="hidden" name="id_komik" value="<%= data.id_komik %>">
+                    <textarea name="isi_komentar" rows="3" placeholder="Tulis pendapatmu tentang komik ini..." required style="padding: 12px; border-radius: 6px; background: #2c2c2c; color: white; border: 1px solid #444; width: 100%; font-family: inherit; resize: vertical; box-sizing: border-box;"></textarea>
+                    <button type="submit" style="align-self: flex-end; background: #bb86fc; color: #121212; border: none; padding: 10px 20px; border-radius: 6px; font-weight: bold; cursor: pointer;">Kirim Komentar</button>
+                </form>
+            <% } else { %>
+                <div style="background: #2c2c2c; padding: 15px; border-radius: 6px; margin-bottom: 20px; text-align: center; font-size: 0.9rem;">
+                    Ingin ikut berkomentar? <a href="/login" style="color: #bb86fc; font-weight: bold;">Masuk ke akunmu</a> atau <a href="/register" style="color: #bb86fc; font-weight: bold;">Daftar gratis</a>.
+                </div>
+            <% } %>
+
+            <div style="display: flex; flex-direction: column; gap: 15px;">
+                <% if(comments.length === 0) { %>
+                    <div style="color: #888; text-align: center; padding: 20px 0;">Belum ada komentar. Jadilah yang pertama!</div>
+                <% } else { %>
+                    <% comments.forEach(function(kom) { %>
+                        <div style="background: #2c2c2c; padding: 15px; border-radius: 6px; border: 1px solid #383838;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <div class="avatar" style="width: 24px; height: 24px; font-size: 0.75rem;"><%= (kom.nama_panggilan.charAt(0) || 'U').toUpperCase() %></div>
+                                    <strong style="color: #bb86fc; font-size: 0.9rem;"><%= kom.nama_panggilan %></strong>
+                                    <span style="color: #777; font-size: 0.75rem;">@<%= kom.username %> &bull; <%= kom.tanggal %></span>
+                                </div>
+                                <% if(currentUser.isAdmin || currentUser.id_user === kom.id_user) { %>
+                                    <form action="/komentar/hapus" method="POST" onsubmit="return confirm('Apakah kamu yakin ingin menghapus komentar ini?')" style="margin: 0;">
+                                        <input type="hidden" name="id_komentar" value="<%= kom.id_komentar %>">
+                                        <input type="hidden" name="id_komik" value="<%= data.id_komik %>">
+                                        <button type="submit" style="background: none; border: none; color: #cf6679; cursor: pointer; font-size: 0.8rem;">🗑️ Hapus</button>
+                                    </form>
+                                <% } %>
+                            </div>
+                            <p style="color: #e0e0e0; font-size: 0.9rem; margin: 0; line-height: 1.5; white-space: pre-wrap;"><%= kom.isi_komentar %></p>
+                        </div>
+                    <% }); %>
+                <% } %>
+            </div>
+        </div>
+    </div>
+
+    <%- include('components/footer') %>
+
+</body>
+</html>

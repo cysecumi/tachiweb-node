@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link rel="stylesheet" href="/assets/style.css">
+    <style>
+        .admin-grid { display: grid; grid-template-columns: 1fr 2fr; gap: 20px; margin-top: 20px; }
+        .admin-card { background: #1e1e1e; padding: 20px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #2d2d2d; }
+        .admin-card h4 { color: #bb86fc; margin-top: 0; margin-bottom: 15px; border-bottom: 1px solid #333; padding-bottom: 10px; font-size: 1.1rem; }
+        .form-group { margin-bottom: 12px; }
+        .form-group label { display: block; font-size: 0.85rem; color: #b3b3b3; margin-bottom: 5px; }
+        .form-group input, .form-group textarea {
+            width: 100%; padding: 10px; background: #2c2c2c; border: 1px solid #444; color: #fff; border-radius: 6px; box-sizing: border-box; font-size: 0.9rem;
+        }
+        .form-group input:focus, .form-group textarea:focus { border-color: #bb86fc; outline: none; }
+        .btn-submit { background: #bb86fc; color: #121212; border: none; padding: 12px; border-radius: 6px; font-weight: bold; cursor: pointer; width: 100%; margin-top: 5px; font-size: 0.95rem; }
+        .btn-submit:hover { background: #a362f8; }
+        .admin-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.85rem; }
+        .admin-table th, .admin-table td { padding: 10px; text-align: left; border-bottom: 1px solid #333; }
+        .admin-table th { background: #2c2c2c; color: #bb86fc; }
+        .btn-act-del { background: #cf6679; color: #fff; border: none; padding: 5px 10px; border-radius: 4px; font-weight: bold; font-size: 0.8rem; cursor: pointer; }
+        .alert-msg { background: #2e7d32; color: white; padding: 12px; border-radius: 6px; margin-bottom: 20px; font-weight: bold; text-align: center; }
+        .alert-error { background: #c62828; color: white; padding: 12px; border-radius: 6px; margin-bottom: 20px; font-weight: bold; text-align: center; }
+        @media (max-width: 900px) {
+            .admin-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <%- include('components/header') %>
+
+    <div class="container">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+            <h3 class="section-title" style="margin-bottom: 0;">Kelola Chapter: <%= komik.judul %></h3>
+            <a href="/admin" style="color: #bb86fc; text-decoration: none; font-size: 0.9rem;">← Kembali ke Dashboard Admin</a>
+        </div>
+
+        <% if(pesan === 'tambah_sukses') { %>
+            <div class="alert-msg">✓ Chapter baru dan halaman gambar berhasil ditambahkan!</div>
+        <% } else if(pesan === 'hapus_sukses') { %>
+            <div class="alert-msg" style="background: #c62828;">🗑️ Chapter dan halamannya berhasil dihapus!</div>
+        <% } else if(pesan === 'nomor_kembar') { %>
+            <div class="alert-error">⚠️ Nomor chapter tersebut sudah ada! Gunakan nomor lain.</div>
+        <% } else if(pesan === 'nomor_salah') { %>
+            <div class="alert-error">⚠️ Nomor chapter harus bernilai 1 atau lebih!</div>
+        <% } %>
+
+        <div class="admin-grid">
+            <!-- KOLOM KIRI: FORM TAMBAH CHAPTER -->
+            <div>
+                <div class="admin-card">
+                    <h4>+ Tambah Chapter Baru</h4>
+                    <form action="/admin/chapter/tambah" method="POST" enctype="multipart/form-data">
+                        <input type="hidden" name="id_komik" value="<%= komik.id_komik %>">
+                        
+                        <div class="form-group">
+                            <label>Nomor Chapter</label>
+                            <input type="number" name="nomor_chapter" value="<%= nomor_saran %>" min="1" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Judul Chapter (Opsional)</label>
+                            <input type="text" name="judul_chapter" placeholder="contoh: Kebangkitan Sang Pahlawan">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Unggah Gambar Halaman (Pilih banyak file)</label>
+                            <input type="file" name="halaman" multiple accept="image/*">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Atau Tempelkan URL Gambar Halaman (Satu URL per baris)</label>
+                            <textarea name="urls_halaman" rows="4" placeholder="https://contoh.com/page1.jpg&#10;https://contoh.com/page2.jpg"></textarea>
+                        </div>
+
+                        <button type="submit" class="btn-submit">+ Unggah Chapter</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- KOLOM KANAN: DAFTAR CHAPTER -->
+            <div>
+                <div class="admin-card">
+                    <h4>📑 Daftar Chapter (<%= chapters.length %>)</h4>
+                    <% if(chapters.length === 0) { %>
+                        <div style="color: #888; padding: 20px 0; text-align: center;">Belum ada chapter pada komik ini.</div>
+                    <% } else { %>
+                        <div style="overflow-x: auto;">
+                            <table class="admin-table">
+                                <thead>
+                                    <tr>
+                                        <th>Chapter</th>
+                                        <th>Judul</th>
+                                        <th>Halaman</th>
+                                        <th>Rilis</th>
+                                        <th>Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% chapters.forEach(function(ch) { %>
+                                        <tr>
+                                            <td><strong>Ch. <%= ch.nomor_chapter %></strong></td>
+                                            <td><%= ch.judul_chapter || '-' %></td>
+                                            <td><span style="color: #03dac6; font-weight: bold;"><%= ch.jumlah_halaman %> hal</span></td>
+                                            <td style="color: #888; font-size: 0.8rem;"><%= ch.tanggal_rilis %></td>
+                                            <td>
+                                                <div style="display: flex; gap: 6px;">
+                                                    <a href="/baca/<%= komik.id_komik %>/<%= ch.nomor_chapter %>" target="_blank" style="background: #2a2a2a; color: #bb86fc; padding: 4px 8px; border-radius: 4px; text-decoration: none; font-size: 0.8rem; font-weight: bold; border: 1px solid #444;">Baca</a>
+                                                    <form action="/admin/chapter/hapus" method="POST" onsubmit="return confirm('Hapus Chapter <%= ch.nomor_chapter %> beserta semua halamannya?');" style="margin: 0;">
+                                                        <input type="hidden" name="id_chapter" value="<%= ch.id_chapter %>">
+                                                        <input type="hidden" name="id_komik" value="<%= komik.id_komik %>">
+                                                        <button type="submit" class="btn-act-del">Hapus</button>
+                                                    </form>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    <% }); %>
+                                </tbody>
+                            </table>
+                        </div>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <%- include('components/footer') %>
+
+</body>
+</html>

@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link rel="stylesheet" href="/assets/style.css">
+    <style>
+        body {
+            background-color: #0d0d0d;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+            user-select: none;
+        }
+        .reader-nav, .reader-bottom-nav {
+            position: fixed;
+            left: 0;
+            width: 100%;
+            background: rgba(20, 20, 20, 0.95);
+            backdrop-filter: blur(12px);
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.8);
+            z-index: 1000;
+            box-sizing: border-box;
+            transition: transform 0.25s ease-in-out, opacity 0.25s ease-in-out;
+        }
+        .reader-nav { top: 0; justify-content: space-between; }
+        .reader-bottom-nav { bottom: 0; justify-content: space-between; max-width: 800px; left: 50%; transform: translateX(-50%); border-radius: 12px 12px 0 0; }
+        .reader-nav.hidden { transform: translateY(-100%); opacity: 0; pointer-events: none; }
+        .reader-bottom-nav.hidden { transform: translate(-50%, 100%); opacity: 0; pointer-events: none; }
+        .reader-container {
+            max-width: 850px;
+            margin: 60px auto 70px auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: #000;
+            min-height: 80vh;
+            cursor: pointer;
+        }
+        .reader-page {
+            width: 100%;
+            height: auto;
+            display: block;
+            margin: 0 auto;
+            vertical-align: middle;
+        }
+        .nav-btn {
+            background: #2a2a2a;
+            color: #e0e0e0;
+            border: 1px solid #444;
+            padding: 8px 16px;
+            border-radius: 20px;
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: bold;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: background-color 0.2s;
+        }
+        .nav-btn:hover { background: #383838; border-color: #bb86fc; }
+        .nav-btn.disabled { opacity: 0.3; pointer-events: none; }
+        .chapter-select {
+            background: #2a2a2a;
+            color: #bb86fc;
+            border: 1px solid #444;
+            padding: 8px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            outline: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- TOP NAVIGATION BAR -->
+    <div class="reader-nav" id="topNav">
+        <a href="/detail/<%= id_komik %>" class="back-btn" style="color: #bb86fc; text-decoration: none; font-weight: bold;">
+            ← <%= judul_komik %>
+        </a>
+        <div class="reader-title">
+            <span style="font-size: 0.95rem; font-weight: bold; color: white;">Chapter <%= ch_num %></span>
+            <% if(chapter && chapter.judul_chapter) { %>
+                <span style="font-size: 0.75rem; color: #aaa;"><%= chapter.judul_chapter %></span>
+            <% } %>
+        </div>
+        <a href="/" class="nav-btn-home" style="background: #bb86fc; color: #121212; padding: 6px 14px; border-radius: 20px; text-decoration: none; font-weight: bold; font-size: 0.85rem;">
+            🏠 Beranda
+        </a>
+    </div>
+
+    <!-- MAIN READING CONTAINER -->
+    <div class="reader-container" id="comicContainer" onclick="toggleBars()">
+        <% if(!chapter) { %>
+            <div style="color: #888; text-align: center; padding: 100px 20px;">
+                <h3 style="color: #cf6679; margin-bottom: 15px;">Chapter Tidak Ditemukan</h3>
+                <p>Maaf, chapter <%= ch_num %> untuk komik ini belum tersedia.</p>
+                <a href="/detail/<%= id_komik %>" class="btn-read" style="margin-top: 20px;">Kembali ke Detail</a>
+            </div>
+        <% } else if(pages.length === 0) { %>
+            <div style="color: #888; text-align: center; padding: 100px 20px;">
+                <h3 style="color: #ffb74d; margin-bottom: 15px;">Halaman Kosong</h3>
+                <p>Belum ada halaman gambar pada chapter ini.</p>
+                <a href="/detail/<%= id_komik %>" class="btn-read" style="margin-top: 20px;">Kembali ke Detail</a>
+            </div>
+        <% } else { %>
+            <% pages.forEach(function(page, idx) { %>
+                <img src="<%= page.url_gambar %>" 
+                     alt="Halaman <%= page.nomor_halaman %>" 
+                     class="reader-page"
+                     loading="<%= idx < 2 ? 'eager' : 'lazy' %>"
+                     onerror="this.onerror=null;this.src='https://placehold.co/800x1200/1e1e1e/bb86fc?text=Halaman+<%= page.nomor_halaman %>';">
+            <% }); %>
+
+            <!-- END OF CHAPTER BANNER -->
+            <div style="width: 100%; background: #1a1a1a; padding: 30px 20px; text-align: center; box-sizing: border-box; border-top: 2px solid #333;">
+                <h4 style="color: #bb86fc; margin-bottom: 10px;">Kamu telah menyelesaikan Chapter <%= ch_num %>!</h4>
+                <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; margin-top: 15px;">
+                    <% if(hasNext) { %>
+                        <a href="/baca/<%= id_komik %>/<%= ch_num + 1 %>" class="btn-read">
+                            Lanjut ke Chapter <%= ch_num + 1 %> ➔
+                        </a>
+                    <% } else { %>
+                        <div style="color: #aaa; padding: 10px;">Ini adalah chapter terbaru saat ini.</div>
+                    <% } %>
+                    <a href="/detail/<%= id_komik %>" class="nav-btn">
+                        Daftar Chapter
+                    </a>
+                </div>
+            </div>
+        <% } %>
+    </div>
+
+    <!-- BOTTOM NAVIGATION BAR -->
+    <div class="reader-bottom-nav" id="bottomNav">
+        <% if(hasPrev) { %>
+            <a href="/baca/<%= id_komik %>/<%= ch_num - 1 %>" class="nav-btn">
+                ◀ Ch. <%= ch_num - 1 %>
+            </a>
+        <% } else { %>
+            <span class="nav-btn disabled">◀ Prev</span>
+        <% } %>
+
+        <select class="chapter-select" onchange="if(this.value) window.location.href=this.value;">
+            <% chapters.forEach(function(c) { %>
+                <option value="/baca/<%= id_komik %>/<%= c.nomor_chapter %>" <%= c.nomor_chapter === ch_num ? 'selected' : '' %>>
+                    Ch. <%= c.nomor_chapter %><% if(c.judul_chapter) { %> - <%= c.judul_chapter %><% } %>
+                </option>
+            <% }); %>
+        </select>
+
+        <% if(hasNext) { %>
+            <a href="/baca/<%= id_komik %>/<%= ch_num + 1 %>" class="nav-btn">
+                Ch. <%= ch_num + 1 %> ▶
+            </a>
+        <% } else { %>
+            <span class="nav-btn disabled">Next ▶</span>
+        <% } %>
+    </div>
+
+    <script>
+        var barsVisible = true;
+        var topNav = document.getElementById("topNav");
+        var bottomNav = document.getElementById("bottomNav");
+
+        function toggleBars() {
+            barsVisible = !barsVisible;
+            if(barsVisible) {
+                topNav.classList.remove("hidden");
+                bottomNav.classList.remove("hidden");
+            } else {
+                topNav.classList.add("hidden");
+                bottomNav.classList.add("hidden");
+            }
+        }
+
+        // Auto-hide when scrolling down, show when scrolling up
+        var lastScrollTop = 0;
+        window.addEventListener("scroll", function() {
+            var st = window.pageYOffset || document.documentElement.scrollTop;
+            if (st > lastScrollTop && st > 150) {
+                // Scroll down
+                if(barsVisible) {
+                    topNav.classList.add("hidden");
+                    bottomNav.classList.add("hidden");
+                    barsVisible = false;
+                }
+            } else if (st < lastScrollTop) {
+                // Scroll up
+                if(!barsVisible) {
+                    topNav.classList.remove("hidden");
+                    bottomNav.classList.remove("hidden");
+                    barsVisible = true;
+                }
+            }
+            lastScrollTop = st <= 0 ? 0 : st;
+        }, false);
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link rel="stylesheet" href="/assets/style.css">
+</head>
+<body>
+
+    <%- include('components/header') %>
+
+    <div class="container">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h3 class="section-title" style="margin-bottom: 0;">📚 Library Saya</h3>
+            <span style="color: #888; font-size: 0.9rem;"><%= jumlah_lib %> Komik Tersimpan</span>
+        </div>
+
+        <% if(jumlah_lib === 0) { %>
+            <div class="kosong">
+                <p style="font-size: 1.1rem; margin-bottom: 12px;">📖 Library kamu masih kosong.</p>
+                <p style="color: #aaa; margin-bottom: 20px;">Simpan komik favoritmu untuk melanjutkan membaca dengan mudah kapan saja.</p>
+                <a href="/" class="btn-read" style="display: inline-block;">Jelajahi Komik</a>
+            </div>
+        <% } else { %>
+            <div class="comic-grid">
+                <% libraryList.forEach(function(item) { %>
+                    <div class="comic-card" style="position: relative;">
+                        <a href="/detail/<%= item.id_komik %>" style="text-decoration: none; color: inherit; display: block;">
+                            <span class="comic-badge"><%= item.sumber %></span>
+
+                            <% if(item.last_chapter) { %>
+                                <span class="comic-type-badge" style="border-color: #03dac6; color: #03dac6;">
+                                    🔖 Ch. <%= item.last_chapter %>
+                                </span>
+                            <% } %>
+
+                            <img src="<%= item.cover %>" alt="Cover <%= item.judul_komik %>" onerror="this.onerror=null;this.src='https://placehold.co/300x450/2c2c2c/bb86fc?text=Cover';">
+                            <div class="comic-info">
+                                <div class="comic-title"><%= item.judul_komik %></div>
+                                <div class="comic-meta">
+                                    <span>
+                                        <% if(item.last_chapter) { %>
+                                            Lanjut Ch. <%= item.last_chapter %>
+                                        <% } else { %>
+                                            Belum dibaca
+                                        <% } %>
+                                    </span>
+                                </div>
+                            </div>
+                        </a>
+
+                        <form action="/library/hapus" method="POST" style="position: absolute; top: 5px; right: 5px; z-index: 10;" onsubmit="return confirm('Hapus komik ini dari library?');">
+                            <input type="hidden" name="id_komik" value="<%= item.id_komik %>">
+                            <input type="hidden" name="redirect" value="library">
+                            <button type="submit" title="Hapus dari library" style="background: rgba(0,0,0,0.7); border: 1px solid #cf6679; color: #cf6679; border-radius: 50%; width: 26px; height: 26px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.75rem;">✕</button>
+                        </form>
+                    </div>
+                <% }); %>
+            </div>
+        <% } %>
+    </div>
+
+    <%- include('components/footer') %>
+
+</body>
+</html>

@@ -1,0 +1,55 @@
+<div class="header">
+    <h2><a href="/" style="color: inherit; text-decoration: none; display: flex; align-items: center; gap: 8px;">
+        <span style="background: linear-gradient(135deg, #bb86fc, #03dac6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 800;">TachiWeb</span>
+    </a></h2>
+    
+    <!-- BAGIAN DROPDOWN MENU PROFIL -->
+    <div class="profile-menu">
+        <button class="profile-btn" onclick="toggleMenu()" type="button" aria-label="Menu Profil">
+            <div class="avatar"><%= currentUser.inisial %></div>
+            <span class="user-name"><%= currentUser.nama_panggilan %></span>
+            <span class="arrow">▼</span>
+        </button>
+        
+        <div class="dropdown-content" id="dropdownProfil">
+            <% if(currentUser.status === 'login') { %>
+                <a href="/library">📚 Library Saya</a>
+                
+                <% if(currentUser.isAdmin) { %>
+                    <a href="/admin" style="color: #bb86fc !important; font-weight: bold;">⚙️ Dashboard Admin</a>
+                <% } %>
+                
+                <a href="/pengaturan">⚙️ Pengaturan</a>
+                <a href="/feedback">💬 Feedback</a>
+                <hr>
+                <a href="/logout" class="dropdown-logout">🚪 Keluar</a>
+            <% } else { %>
+                <a href="/library">📚 Library Saya</a>
+                <hr>
+                <a href="/login" class="dropdown-logout" style="color:#bb86fc !important;">🔑 Buat Akun / Login</a>
+            <% } %>
+        </div>
+    </div>
+</div>
+
+<script>
+function toggleMenu() {
+    var menu = document.getElementById("dropdownProfil");
+    if(menu) {
+        menu.classList.toggle("show");
+    }
+}
+
+// Tutup dropdown jika pengguna klik di luar menu
+window.addEventListener("click", function(event) {
+    if (!event.target.closest('.profile-menu')) {
+        var dropdowns = document.getElementsByClassName("dropdown-content");
+        for (var i = 0; i < dropdowns.length; i++) {
+            var openDropdown = dropdowns[i];
+            if (openDropdown.classList.contains('show')) {
+                openDropdown.classList.remove('show');
+            }
+        }
+    }
+});
+</script>

@@ -1,0 +1,6 @@
+{
+  "name": "TachiWeb",
+  "description": "Web baca komik manga, manhwa, dan manhua dengan fitur library, reader, dan admin dashboard.",
+  "permissions": [],
+  "capabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

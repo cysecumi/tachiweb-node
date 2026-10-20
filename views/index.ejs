@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <meta name="description" content="TachiWeb - Web baca komik manga, manhwa, dan manhua online terlengkap dengan pengalaman pembaca terbaik.">
+    <meta property="og:title" content="TachiWeb - Web Baca Komik Online">
+    <meta property="og:description" content="Baca manga, manhwa, dan manhua favoritmu dengan mudah dan cepat di TachiWeb.">
+    <link rel="stylesheet" href="/assets/style.css">
+</head>
+<body>
+
+    <%- include('components/header') %>
+
+    <div class="container">
+        <h3 class="section-title">Latest Updates</h3>
+
+        <!-- Form pencarian dan filter -->
+        <form method="GET" action="/" class="filter-bar">
+            <input type="text" name="cari" placeholder="Cari judul, author, atau genre..." value="<%= f_cari %>">
+            <select name="status">
+                <option value="">Semua Status</option>
+                <option value="Ongoing" <%= f_status === 'Ongoing' ? 'selected' : '' %>>Ongoing</option>
+                <option value="Completed" <%= f_status === 'Completed' ? 'selected' : '' %>>Completed</option>
+            </select>
+            <select name="sumber">
+                <option value="">Semua Sumber</option>
+                <% daftar_sumber.forEach(function(s) { %>
+                    <option value="<%= s %>" <%= f_sumber === s ? 'selected' : '' %>><%= s %></option>
+                <% }); %>
+            </select>
+            <button type="submit">🔍 Cari</button>
+            <% if(f_cari || f_status || f_sumber) { %>
+                <a href="/" class="filter-reset">✖ Reset</a>
+            <% } %>
+        </form>
+
+        <% if(f_cari || f_status || f_sumber) { %>
+            <p class="filter-info">Menampilkan <%= jumlah_komik %> komik</p>
+        <% } %>
+
+        <% if(jumlah_komik === 0) { %>
+            <div class="kosong">😕 Komik tidak ditemukan. Coba kata kunci atau filter lain.</div>
+        <% } %>
+
+        <div class="comic-grid">
+            <% komikList.forEach(function(komik) { 
+                var tipe = komik.tipe || 'Manga';
+                var bendera = '🇯🇵';
+                var class_tipe = 'type-manga';
+
+                if(tipe === 'Manhwa') {
+                    bendera = '🇰🇷';
+                    class_tipe = 'type-manhwa';
+                } else if(tipe === 'Manhua') {
+                    bendera = '🇨🇳';
+                    class_tipe = 'type-manhua';
+                }
+            %>
+                <a href="/detail/<%= komik.id_komik %>" style="text-decoration: none; color: inherit;">
+                    <div class="comic-card">
+                        <span class="comic-badge"><%= komik.sumber %></span>
+                        <span class="comic-type-badge <%= class_tipe %>">
+                            <%= bendera %> <%= tipe %>
+                        </span>
+                        <img src="<%= komik.cover %>" alt="Cover <%= komik.judul %>" loading="lazy" onerror="this.onerror=null;this.src='https://placehold.co/300x450/2c2c2c/bb86fc?text=Cover';">
+                        <div class="comic-info">
+                            <div class="comic-title"><%= komik.judul %></div>
+                            <div class="comic-meta">
+                                <span><%= komik.status %></span>
+                                <% if(komik.author) { %>
+                                    <span style="opacity: 0.8;"><%= komik.author %></span>
+                                <% } %>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            <% }); %>
+        </div>
+    </div>
+
+    <%- include('components/footer') %>
+
+</body>
+</html>

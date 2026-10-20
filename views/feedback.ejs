@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link rel="stylesheet" href="/assets/style.css">
+</head>
+<body>
+
+    <%- include('components/header') %>
+
+    <div class="container" style="max-width: 650px; margin: 40px auto; background: #1e1e1e; padding: 30px; border-radius: 8px; border: 1px solid #2d2d2d; box-sizing: border-box;">
+        <h2 style="margin-bottom: 10px; color: #bb86fc;">Kirim Feedback</h2>
+        <p style="color: #b3b3b3; margin-bottom: 25px; line-height: 1.5;">Ada bug, permintaan fitur, atau saran untuk pengembangan TachiWeb? Sampaikan langsung ke tim Admin di sini.</p>
+
+        <% if(status === 'sukses') { %>
+            <div style="background: #2e7d32; color: white; padding: 12px; border-radius: 6px; margin-bottom: 20px; text-align: center; font-weight: bold;">
+                ✓ Terima kasih! Feedback kamu telah terkirim ke Admin.
+            </div>
+        <% } %>
+
+        <form action="/feedback" method="POST" style="display: flex; flex-direction: column; gap: 15px;">
+            <textarea name="isi_feedback" rows="6" placeholder="Ketik masukanmu di sini..." required style="padding: 15px; border-radius: 6px; background: #2c2c2c; color: white; border: 1px solid #444; width: 100%; font-family: inherit; resize: vertical; box-sizing: border-box; font-size: 0.95rem;"></textarea>
+            <button type="submit" style="padding: 12px; background: #bb86fc; color: #121212; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 1rem;">Kirim Feedback</button>
+        </form>
+    </div>
+
+    <%- include('components/footer') %>
+
+</body>
+</html>

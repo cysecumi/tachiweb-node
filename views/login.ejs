@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link rel="stylesheet" href="/assets/style.css">
+    <style>
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background-color: #121212; 
+            color: white; 
+            display: flex; 
+            flex-direction: column;
+            justify-content: center; 
+            align-items: center; 
+            min-height: 100vh; 
+            margin: 0; 
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .login-box { 
+            background-color: #1e1e1e; 
+            padding: 35px 25px; 
+            border-radius: 12px; 
+            width: 100%; 
+            max-width: 400px; 
+            box-shadow: 0 8px 30px rgba(0,0,0,0.7); 
+            box-sizing: border-box;
+            border: 1px solid #2a2a2a;
+        }
+        .login-box h2 { 
+            text-align: center; 
+            color: #bb86fc; 
+            margin-bottom: 25px; 
+            font-size: 1.8rem;
+        }
+        .login-input { 
+            width: 100%; 
+            padding: 12px; 
+            margin: 10px 0; 
+            border: 1px solid #383838; 
+            border-radius: 6px; 
+            box-sizing: border-box; 
+            background: #2c2c2c; 
+            color: white; 
+            font-size: 1rem; 
+            outline: none;
+        }
+        .login-input:focus { border-color: #bb86fc; }
+        .login-btn { 
+            width: 100%; 
+            padding: 12px; 
+            background-color: #bb86fc; 
+            border: none; 
+            color: #121212; 
+            font-weight: bold; 
+            border-radius: 6px; 
+            cursor: pointer; 
+            font-size: 1rem; 
+            margin-top: 15px; 
+            transition: background-color 0.2s;
+        }
+        .login-btn:hover { background-color: #a362f8; }
+        .alert-box { 
+            background-color: #b71c1c; 
+            color: white; 
+            padding: 12px; 
+            border-radius: 6px; 
+            font-size: 0.9rem; 
+            margin-bottom: 20px; 
+            text-align: center; 
+        }
+        .demo-box {
+            margin-top: 25px;
+            padding: 12px;
+            background: #252525;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            color: #aaa;
+            line-height: 1.4;
+        }
+        .demo-box strong { color: #bb86fc; }
+    </style>
+</head>
+<body>
+
+    <div class="login-box">
+        <h2>TachiWeb</h2>
+
+        <% if(pesan === 'gagal') { %>
+            <div class="alert-box">⚠️ Username atau password salah!</div>
+        <% } else if(pesan === 'akses_ditolak') { %>
+            <div class="alert-box" style="background-color: #e65100;">🔒 Silakan login terlebih dahulu untuk mengakses halaman tersebut.</div>
+        <% } else if(pesan === 'belum_login') { %>
+            <div class="alert-box" style="background-color: #0277bd;">ℹ️ Silakan login untuk menyimpan komik ke Library.</div>
+        <% } %>
+
+        <form action="/login" method="POST">
+            <label style="font-size: 0.85rem; color: #aaa;">Username</label>
+            <input type="text" name="username" class="login-input" placeholder="Masukkan username" required autocomplete="username">
+
+            <label style="font-size: 0.85rem; color: #aaa; margin-top: 5px; display: block;">Password</label>
+            <input type="password" name="password" class="login-input" placeholder="Masukkan password" required autocomplete="current-password">
+
+            <button type="submit" class="login-btn">Masuk</button>
+        </form>
+
+        <div style="text-align: center; margin-top: 20px; font-size: 0.9rem; color: #bbb;">
+            <p>Belum punya akun? <a href="/register" style="color: #bb86fc; font-weight: bold; text-decoration: none;">Daftar di sini</a></p>
+            <p style="margin-top: 10px;">Atau lanjut sebagai <a href="/masuk-guest" style="color: #03dac6; font-weight: bold; text-decoration: none;">Pengunjung / Tamu</a></p>
+        </div>
+
+        <div class="demo-box">
+            <strong>Akun Demo Cepat:</strong><br>
+            &bull; Admin: <code>admin</code> / <code>admin123</code><br>
+            &bull; User: <code>cyse</code> / <code>cyse123</code>
+        </div>
+    </div>
+
+</body>
+</html>

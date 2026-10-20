@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <link rel="stylesheet" href="/assets/style.css">
+    <style>
+        .edit-box { max-width: 650px; margin: 30px auto; background: #1e1e1e; padding: 25px; border-radius: 8px; border: 1px solid #2d2d2d; }
+        .form-group { margin-bottom: 14px; }
+        .form-group label { display: block; font-size: 0.85rem; color: #b3b3b3; margin-bottom: 5px; }
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%; padding: 10px; background: #2c2c2c; border: 1px solid #444; color: #fff; border-radius: 6px; box-sizing: border-box; font-size: 0.95rem;
+        }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: #bb86fc; outline: none; }
+        .btn-submit { background: #bb86fc; color: #121212; border: none; padding: 12px; border-radius: 6px; font-weight: bold; cursor: pointer; width: 100%; margin-top: 10px; font-size: 1rem; }
+    </style>
+</head>
+<body>
+
+    <%- include('components/header') %>
+
+    <div class="container">
+        <div class="edit-box">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h3 style="color: #bb86fc; margin: 0;">✏️ Edit Data Komik</h3>
+                <a href="/admin" style="color: #aaa; text-decoration: none; font-size: 0.9rem;">← Kembali ke Dashboard</a>
+            </div>
+
+            <form action="/admin/komik/edit" method="POST" enctype="multipart/form-data">
+                <input type="hidden" name="id_komik" value="<%= data.id_komik %>">
+                
+                <div class="form-group">
+                    <label>Judul Komik</label>
+                    <input type="text" name="judul" value="<%= data.judul %>" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Author / Pembuat</label>
+                    <input type="text" name="author" value="<%= data.author %>" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Sumber / Scanner</label>
+                    <input type="text" name="sumber" value="<%= data.sumber %>" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Tipe Komik</label>
+                    <select name="tipe">
+                        <option value="Manga" <%= data.tipe === 'Manga' ? 'selected' : '' %>>🇯🇵 Manga (Jepang)</option>
+                        <option value="Manhwa" <%= data.tipe === 'Manhwa' ? 'selected' : '' %>>🇰🇷 Manhwa (Korea)</option>
+                        <option value="Manhua" <%= data.tipe === 'Manhua' ? 'selected' : '' %>>🇨🇳 Manhua (China)</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Status</label>
+                    <select name="status">
+                        <option value="Ongoing" <%= data.status === 'Ongoing' ? 'selected' : '' %>>Ongoing</option>
+                        <option value="Completed" <%= data.status === 'Completed' ? 'selected' : '' %>>Completed</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Genre (pisahkan dengan koma)</label>
+                    <input type="text" name="genre" value="<%= data.genre %>">
+                </div>
+
+                <div class="form-group">
+                    <label>Cover Saat Ini</label>
+                    <div style="margin: 8px 0;">
+                        <img src="<%= data.cover %>" alt="Cover" style="height: 100px; border-radius: 4px; object-fit: cover;" onerror="this.onerror=null;this.src='https://placehold.co/100x150/2c2c2c/bb86fc?text=Cover';">
+                    </div>
+                    <label style="margin-top: 10px;">Ganti File Cover (Opsional)</label>
+                    <input type="file" name="cover" accept="image/*">
+                    <label style="margin-top: 8px;">Atau Masukkan URL Cover Baru</label>
+                    <input type="url" name="cover_url" placeholder="https://..." value="<%= data.cover.startsWith('http') ? data.cover : '' %>">
+                </div>
+
+                <div class="form-group">
+                    <label>Sinopsis</label>
+                    <textarea name="sinopsis" rows="5" required><%= data.sinopsis %></textarea>
+                </div>
+
+                <button type="submit" class="btn-submit">💾 Simpan Perubahan Komik</button>
+            </form>
+        </div>
+    </div>
+
+    <%- include('components/footer') %>
+
+</body>
+</html>
